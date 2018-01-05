@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - About</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="/script/wordcloud.js"></script>
+  </head>
+  <body>
+
+    <script>
+      $(function() {
+        var $wordcloudElement = $("#wordcloud-fragment");
+        
+        $wordcloudElement.css("line-height", 1.1);
+        doWordCloud($wordcloudElement);
+      });
+    </script>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div id="wordcloud-fragment" class="contentSingle">
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

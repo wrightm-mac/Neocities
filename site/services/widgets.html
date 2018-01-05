@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Widgets</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="widget.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+  </head>
+  <body>
+    
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      <h1>Widgets</h1>
+      
+      <input id="message" type="text" placeholder="Log Message" class="standardInput"/>
+      <div id="logButton" class="standardButton">Log</div>
+      <div id="infoButton" class="standardButton">Info</div>
+      <div id="warnButton" class="standardButton">Warn</div>
+      <div id="errorButton" class="standardButton">Error</div>
+      
+      <div fragment="/fragments/log-console.html"></div>
+      
+    </div>
+
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

@@ -1,0 +1,48 @@
+
+
+.widgetTable {
+  color: darkgey;
+  width: 100%;
+}
+
+.widgetHeaderRow {
+  background-color: red;
+  color: white;
+  font-weight: bold;
+}
+
+.widgetHeaderOne, .widgetHeaderTwo, .widgetHeaderThree, .widgetHeaderFour {
+  color: white;
+  font-weight: bold;
+}
+
+.widgetHeaderTwo {
+  color: black;
+  width: 50%;
+}
+
+.widgetRowEven, .widgetRowOdd {
+  cursor: pointer;
+  vertical-align: top;
+}
+
+.widgetRowEven {
+  background-color: blue;
+}
+
+.widgetRowOdd {
+  background-color: orange;
+}
+
+.widgetCellOne, .widgetCellTwo, .widgetCellThree, .widgetCellFour {
+}
+
+.widgetCellTwo {
+  color: lightgray;
+  text-align: center;
+}
+
+.widgetIcon {
+  width: 60px;
+  height: auto;
+}

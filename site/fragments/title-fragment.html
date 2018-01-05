@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<div class="header">
+  <div class="headerTitle">
+    hello, world!
+  </div>
+  <span id="navigationMain" class="headerNavigation"></span>
+</div>
+
+<div class="headerPicture">
+  <a href="http://neocities.org"><img src="/cat.png"/></a>
+</div>
+
+<div class="userCapsule">
+  <span id="loginButton" class="loginLink">Login</span>
+</div>
+
+<script>
+  // The sitemap is used to build the title-bar's navigation links -
+  // use the 'children' array to specify any paths that should cause
+  // the link to be highlighted (children can be specified by using
+  // either a string or a regular-expression)...
+  let sitemap = [
+    {
+      name: "Home",
+      path:"/index.html",
+      children: [
+        "/"
+      ]
+    }, {
+      name: "Books",
+      path: "/books.html",
+    }, {
+      name: "Links",
+      path: "/links.html",
+      children: [
+        "/development/idelinks.html"
+      ]
+    }, {
+      name: "Design",
+      path: "/design.html"
+    }, {
+      name: "Services",
+      path: "/services.html",
+      children: [
+        /services\/*/
+      ]
+    }, {
+      name: "About",
+      path: "/about.html"
+    }, {
+      name: "Contact",
+      path: "/contact.html"
+    },
+  ];
+
+  $(function() {
+    let path = window.location.pathname;
+
+    let $headerLinks = $("#navigationMain");
+    $.map(sitemap, function(item) {
+      var isSelected = (item.path === path);
+      if (! isSelected) {
+        $.map(item.children, function(childItem) {
+          isSelected = isSelected
+                        || ((typeof(childItem) === "string") && (childItem === path))
+                        || ((typeof(childItem) === "object") &&  childItem.test(path));
+        });
+      }
+  
+      if (! item.hide) {    
+        let $navigationLink = $("<a>" + item.name + "</a>");
+        $navigationLink.attr("class", item.disabled ? "headerLinkDisabled" : (isSelected ? "headerLinkSelected" : "headerLink"));
+        if (! item.disabled) {
+          $navigationLink.attr("href", item.path);
+        }
+        
+        $headerLinks.append($navigationLink);
+      }
+    });
+  });
+</script>

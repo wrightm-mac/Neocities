@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Train Departures</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/style_transport.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="/script/transportapi.js"></script>
+  </head>
+  <body>
+  
+    <script>
+      $(function() {
+        function getStatusCssClass(status) {
+          switch (status) {
+            case "LATE": return "trainTableCellStatusBad";
+            case "CANCELLED": return "trainTableCellStatusBad";
+            case "EARLY": return "trainTableCellStatusGood";
+            case "ON TIME": return "trainTableCellStatusGood";
+            case "BUS": return "trainTableCellStatusOther";
+            case "STARTS HERE": return "trainTableCellStatusSpecial";
+            default: return "trainTableCellStatus";
+          }
+        }
+        
+        function doDepartureSearch() {
+          let search = $("#transportQuery").val();
+          
+          let $departurePanel = $("#stationDepartures");
+          $departurePanel.empty();
+          
+          eachTrainStation(search, function(success, station) {
+  
+            getTrainDeparturesByCode(station.station_code, function(success, info) {
+            
+              let $departureTable = $departurePanel.appendTable([{
+                html: "Operator",
+                cssClass: "standardTableHeader trainTableHeaderCell"
+              }, {
+                html: "From",
+                cssClass: "standardTableHeader trainTableHeaderCell"
+              }, {
+                html: "To",
+                cssClass: "standardTableHeader trainTableHeaderCell"
+              }, {
+                html: "Arrive",
+                cssClass: "standardTableHeader trainTableHeaderCell"
+              }, {
+                html: "Depart",
+                cssClass: "standardTableHeader trainTableHeaderCell"
+              }, {
+                html: "Plat",
+                cssClass: "standardTableHeader trainTableHeaderCell"
+              }, {
+                html: "",
+                cssClass: "standardTableHeader trainTableHeaderCell"
+              }], "standardTable trainTable");
+            
+              $.each(info.departures.all, function(index, departure) {
+                let $row = $departureTable.appendRow([{
+                  html: departure.operator_name,
+                  cssClass: "trainTableCellOperator"
+                }, {
+                  html: "<span>" + departure.origin_name + "<span><div id='serviceScheduleFrom' style='display:none;'></div>",
+                  cssClass: "trainTableCellFrom"
+                }, {
+                  html: "<span>" + departure.destination_name + "<span><div id='serviceScheduleTo' style='display:none;'></div>",
+                  cssClass: "trainTableCellTo"
+                }, {
+                  html: departure.expected_arrival_time,
+                  cssClass: "trainTableCellArrive"
+                }, {
+                  html: departure.expected_departure_time,
+                  cssClass: "trainTableCellDepart"
+                }, {
+                  html: departure.platform,
+                  cssClass: "trainTableCellPlatform"
+                }, {
+                  html: departure.status,
+                  cssClass: getStatusCssClass(departure.status)
+                }], ((index % 2 === 0) ? "standardTableRowOdd" : "standardTableRowEven") + " trainTableRow");
+                
+                $row.data('service_timetable', departure.service_timetable.id);
+                $row.data('station_code', station.station_code);
+                $row.click(function() {
+                  let scheduleUrl = $(this).data("service_timetable");
+                  let stationCode = $(this).data("station_code");
+                  
+                  let $schedulePanelFrom = $(this).find("#serviceScheduleFrom");
+                  let $schedulePanelTo = $(this).find("#serviceScheduleTo");
+
+                  if (! $schedulePanelFrom.data('loaded')) {
+                    rawTransportSearch(scheduleUrl, {}, function(success, schedule) {
+                      if (success) {
+                        let $scheduleTableFrom = $schedulePanelFrom.appendTable([{
+                                                                                  html: "Departed",
+                                                                                  colspan: 2,
+                                                                                  cssClass: "standardTableHeader trainScheduleTableHeaderRow"
+                                                                                }], "trainScheduleTable");
+                          
+                        let $scheduleTableTo = $schedulePanelTo.appendTable([{
+                                                                              html: "Arriving",
+                                                                              colspan: 2,
+                                                                              cssClass: "standardTableHeader trainScheduleTableHeaderRow"
+                                                                            }], "trainScheduleTable");
+                        
+                        
+                        var $table = $scheduleTableFrom;
+                        $.each(schedule.stops, function(index, stop) {
+                          if (stop.station_code === stationCode) {
+                            $table = $scheduleTableTo;
+                          }
+                          else {
+                            $table.appendRow([{
+                              html: stop.station_name,
+                              cssClass: "trainScheduleTableCellStation"
+                            }, {
+                              html: stop.expected_departure_time || stop.aimed_departure_time || stop.expected_arrival_time,
+                              cssClass: "trainScheduleTableCellTime " + getStatusCssClass(stop.status)
+                            }], "trainScheduleTableRow");
+                          }
+                        });
+                        
+                        $schedulePanelFrom.data('loaded', true);
+                  
+                        if ($scheduleTableFrom.find("tr").length == 1) { $scheduleTableFrom.hide(); }
+                        if ($scheduleTableTo.find("tr").length == 1) { $scheduleTableTo.hide(); }
+                      }
+                    });
+                  }
+
+                  $schedulePanelFrom.toggle();
+                  $schedulePanelTo.toggle();
+                });
+              });
+              
+              $departurePanel.append("<br/>");
+              $departurePanel.append("<span class='trainSectionName'>" + station.name + "</span>");
+              $departurePanel.append("<span class='trainSectionCode'>" + station.station_code + "</span>");
+              $departurePanel.append($departureTable);
+            });
+          });
+        }
+        
+        $("#transportSearch").click(function() {
+          doDepartureSearch();
+        });
+        
+        $('#transportQuery').enterkey(function (event) {
+          doDepartureSearch();
+        });
+        
+        let stationParam = $.urlVar("station");
+        if (stationParam) {
+          $("#transportQuery").val(stationParam);
+          doDepartureSearch();
+        }
+      });
+    </script>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      
+      <h1>Train Departures</h1>
+      
+      <div>
+        <table class="standardInputCluster">
+          <tr>
+            <td style="width: 100%;"><input id="transportQuery" type="text" placeholder="Departing From" class="standardInput"/>
+            <td><div id="transportSearch" class="standardButton">Search</div>
+          </tr>
+        </table>
+      </div>
+      
+      <div id="stationDepartures">
+      </div>
+    
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

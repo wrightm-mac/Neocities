@@ -1,0 +1,185 @@
+/*
+  Custom styling for transport timetables.
+
+*/
+
+.trainSectionName, .trainSectionCode {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 130%;
+  text-decoration: none;
+  padding: 25px 5px 15px 3px;
+  color: black;
+}
+
+.trainSectionCode {
+  text-decoration: none;
+  color: darkgray;
+}
+
+.trainTable {
+  font-size: 60%;
+}
+
+.trainTableHeader {
+}
+
+.trainTableHeaderCell {
+  font-size: 120%;
+}
+
+.trainTableRow, .trainTableRowOdd, .trainTableRowEven {
+}
+
+.trainTableRowOdd {
+}
+
+.trainTableRowEven {
+}
+
+
+/* ------------------- */
+
+
+.trainTableCellOperator {
+  width: 20%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.trainTableCellFrom {
+  font-size: 110%;
+  font-weight: bold;
+  width: 28%;
+  text-align: center;
+}
+
+.trainTableCellTo {
+  font-size: 110%;
+  font-weight: bold;
+  width: 28%;
+  text-align: center;
+}
+
+.trainTableCellArrive {
+  text-align: center;
+  width: 5%;
+}
+
+.trainTableCellDepart {
+  text-align: center;
+  width: 5%;
+}
+
+.trainTableCellPlatform {
+  font-weight: bold;
+  text-align: center;
+  width: 3%;
+}
+
+.trainTableCellStatus, .trainTableCellStatusGood, .trainTableCellStatusBad, .trainTableCellStatusSpecial, .trainTableCellStatusOther  {
+  border-color: white;
+  border-radius: 5px;
+  border-width: 2px;
+  border-style: solid;
+  font-weight: bold;
+  color: white;
+  
+  text-align: center;
+  width: 12%;
+}
+
+.trainTableCellStatus {
+  background-color: darkblue;
+}
+
+.trainTableCellStatusGood {
+  background-color: green;
+}
+
+.trainTableCellStatusBad {
+  background-color: red;
+}
+
+.trainTableCellStatusSpecial {
+  background-color: black;
+}
+
+.trainTableCellStatusOther {
+  background-color: orange;
+}
+
+
+/* -------------------- */
+
+
+.trainScheduleTable {
+  font-size: 80%;
+  font-weight: normal;
+  padding: 0 8px 0 8px;
+}
+
+.trainScheduleTableHeaderRow {
+  height: 10px;
+  width: 100%;
+}
+
+.trainScheduleTableRow, .trainScheduleTableRowSelected {
+}
+
+.trainScheduleTableRowSelected {
+  font-weight: bold;
+}
+
+.trainScheduleTableCellStation, .trainScheduleTableCellTime {
+  height: 10px;
+  padding: 0 5px 0 5px;
+}
+
+.trainScheduleTableCellStation {
+  text-align: left;
+  vertical-align: top;
+  width: 90%;
+}
+
+.trainScheduleTableCellTime {
+  text-align: right;
+  vertical-align: top;
+  width: 10%;
+}
+
+
+/* -------------------- */
+
+
+.journeyLocationSelect {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 80%;
+  padding: 0 0 0 10px;
+}
+
+.journeyRow {
+  cursor: default;
+}
+
+.journeyIconCell, .journeyDirectionCell, journeyTimeCell {
+  cursor: default;
+  text-align: center;
+  vertical-align: top;
+}
+
+.journeyIconCell {
+  width: auto;
+  height: 35px;
+  padding: 3px 3px 3px 8px;
+}
+
+.journeyDirectionCell {
+  width: 40%;
+  padding: 5px 10px 0 10px;
+  text-align: left;
+}
+
+.journeyTimeCell {
+  width: 6%;
+  padding: 5px 2px 0 2px;
+}

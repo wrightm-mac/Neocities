@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Weather</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="/script/standard.js"></script>
+    <script src="/script/weather.js"></script>
+  </head>
+  <body>
+  
+    <script>
+
+      let weatherTemplate = {
+        id: "weatherGrid",
+        css: ["standardTable", "weatherTable"],
+        header: {
+          css: ["standardTableHeader"]
+        },
+        row: {
+          css: "standardTableRowEven",
+          altcss: "standardTableRowOdd",
+          other: "xyz",
+          transform: function(rowdata) {
+            return $.extend({
+              iconpath: rowdata.weather[0].icon + ".png",
+              icontitle: $.capitalise(rowdata.weather[0].description),
+              date: rowdata.dt,
+              description: rowdata.weather[0].main,
+              temperature: rowdata.temp.day,
+              range: rowdata.temp
+            }, rowdata);
+          },
+          click: function() {
+            $(this).find("#infoDetail").toggle();
+            $(this).find("#infoTemperature").toggle();
+          }
+        },
+        columns: [{
+          header: {
+            css: "standardTableHeader"
+          },
+          css: "weatherTableRowIcon",
+          image: {
+            id: "weatherIcon",
+            datafield: "iconpath",
+            title: "The Title!",
+            transform: function(datafield, rowdata) {
+              return "https://openweathermap.org/img/w/" + datafield;
+            }
+          }
+        }, {
+          header: {
+            text: "Weather",
+            css: "standardTableHeader",
+            colspan: 2
+          },
+          css: "weatherTableRowDay",
+          datafield: "date",
+          transform: function(datafield) {
+            return daysOfWeek[new Date(datafield * 1000).getDay()];
+          }
+        }, {
+          css: "weatherTableRowStatus",
+          datafield: "description",
+          panel: {
+            id: "infoDetail",
+            hidden: true
+          },
+          after: function(rowdata) {
+            $(this).find("#infoDetail").table(detailTemplate, [
+              {name: "Clouds", value: rowdata.clouds + "%"},
+              {name: "Pressure", value: rowdata.pressure + "&#176;"},
+              {name: "Humidity", value: rowdata.humidity + "%"},
+              {name: "Rain", value: (rowdata.rain || 0).toFixed(2) + " cm", ignore: rowdata.rain ? false : true},
+              {name: "Snow", value: (rowdata.snow || 0).toFixed(2) + " cm", ignore: rowdata.snow ? false : true},
+              {name: "Wind Speed", value: rowdata.speed + "kph"},
+              {name: "Wind Direction", value: rowdata.deg + "&#176;"}
+            ]);
+          }
+        }, {
+          header: {
+            text: "Temp",
+            css: "standardTableHeader"
+          },
+          css: "weatherTableRowTemp",
+          datafield: "temperature",
+          transform: function(datafield) {
+            return datafield.toFixed(1) + "&#176;";
+          },
+          panel: {
+            id: "infoTemperature",
+            hidden: true
+          },
+          after: function(rowdata) {
+            $(this).find("#infoTemperature").table(detailTemplate, [
+              {name: "Maximum", value: rowdata.range.max.toFixed(1)},
+              {name: "Minimum", value: rowdata.range.min.toFixed(1)},
+              {name: "Morning", value: rowdata.range.morn.toFixed(1)},
+              {name: "Evening", value: rowdata.range.eve.toFixed(1)},
+              {name: "Night", value: rowdata.range.night.toFixed(1)}
+            ]);
+          }
+        }]
+      };
+      
+      let detailTemplate = {
+        css: "weatherDetailTable",
+        row: {
+          before: function(rowdata) {
+            if (rowdata.ignore) {
+              return false;
+            }
+          }
+        },
+        columns: [{
+          css: "weatherDetailTableName",
+          datafield: "name"
+        }, {
+          css: "weatherDetailTableValue",
+          datafield: "value"
+        }]
+      };
+      
+      $(function() {
+            
+        function doWeatherSearch() {
+          getOpenWeather("forecast/daily", {q: $("#weatherLocation").val(), cnt: 16}, function(success, data) {
+            let $weatherResults = $("#weatherResults");
+            $weatherResults.empty();
+            
+            if (success) {
+              $weatherResults.table(weatherTemplate, data.list);
+            }
+          });
+        }
+        
+        $(function() {
+          
+          doWeatherSearch();
+          
+          $("#weatherSearch").click(function() {
+            doWeatherSearch();
+          });
+      
+          $('#weatherLocation').keypress(function (e) {
+            if (e.which == 13) {
+              doWeatherSearch();
+              return false;
+            }
+          });
+        });
+        
+      });
+    </script>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      
+      <h1>Weather</h1>
+      
+      <div>
+        <table class="standardInputCluster">
+          <tr>
+            <td style="width: 100%;"><input id="weatherLocation" type="text" value="Lincoln, UK" class="standardInput"/>
+            <td><div id="weatherSearch" class="standardButton">Search</div>
+          </tr>
+        </table>
+      </div>
+      
+      <div id="weatherResults"></div>
+    
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

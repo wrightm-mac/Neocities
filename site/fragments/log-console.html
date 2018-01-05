@@ -1,0 +1,237 @@
+<style>
+
+  .expandButton, .expandPanel {
+    font-family: Verdana, Geneva, sans-serif;
+  }
+  
+  .expandButton {
+    font-size: 12px;
+    font-weight: bold;
+    
+    background-color: red;
+    color: white;
+    cursor: pointer;
+    
+    text-align: center;
+    vertical-align: middle;
+    line-height: 20px;
+    
+    border-radius: 8px;
+    
+    position: fixed;
+    bottom: 3px;
+    right: 3px;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .expandPanel {
+    background-color: white;
+    
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    
+    display: none;
+  }
+  
+  .expandControls, .expandLog {
+    background-color: white;
+    
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+
+    height: 92%;
+
+    margin: 2px;
+    padding: 3px;
+  }
+  
+  .expandControls {
+    float: left;
+    width: 40px;
+    
+    text-align: center;
+    vertical-align: top;
+  }
+  
+  .expandLog {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14px;
+    line-height: 15px;
+    
+    overflow: scroll;
+    
+    width: 93%;
+  }
+  
+  .deleteButton {
+    background-color: red;
+    color: white;
+    
+    border-radius: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+  
+  .toggleSwitch, .toggleKnob {
+    border-color: black;
+    border-style: solid;
+    border-width: 0.25px;
+  }
+  
+  .toggleSwitch {
+    width: 35px;
+    height: 15px;
+    
+    margin: 4px 0 0 4px;
+  }
+  
+  .toggleKnob {
+    background-color: white;
+    
+    position: relative;
+  }
+
+</style>
+
+<script>
+  
+  $.extend({
+    toggler: function(settings) {
+      let defaults = {
+        width: 36,
+        height: 18,
+        
+        color_on: "green",
+        color_off: "lightgray",
+        
+        border: 10
+      };
+      
+      $.extend(defaults, settings || {});
+      
+      let $toggle = $("<div></div>");
+      $toggle.prop("id", defaults.id);
+      $toggle.addClass("toggleSwitch");
+      $toggle.css("background-color", defaults.color_on);
+      $toggle.css("width", defaults.width);
+      $toggle.css("height", defaults.height);
+      $toggle.css("border-radius", defaults.border);
+      
+      let $knob = $("<div></div>");
+      $toggle.append($knob);
+      $knob.addClass("toggleKnob");
+      $knob.css("width", defaults.width / 2);
+      $knob.css("height", defaults.height - 0.5);
+      $knob.css("top", 0);
+      $knob.css("border-radius", defaults.border);
+      
+      $toggle.data("ison", false);
+      
+      $toggle.flip = function(on) {
+        if (on === undefined) {
+          on = ! $toggle.data("ison");
+        }
+        
+        let posX = on ? (defaults.width / 2) : 0;
+        $knob.css("left", posX);
+        $toggle.css("background-color", on ? defaults.color_on : defaults.color_off );
+        $toggle.data("ison", on);
+        
+        return on;
+      };
+      
+      $toggle.click(function() {
+        $toggle.flip();
+      });
+      
+      $toggle.flip(defaults.on || false);
+      
+      return $toggle;
+    }
+  });
+  
+  $.fn.extend({
+    toggled: function(value) {
+      if (value !== undefined) {
+        this.flip(value);
+      }
+      
+      return this.data("ison");
+    }
+  });
+  
+  $(function() {
+
+    let consoleLog = console.log;
+    let consoleInfo = console.info;
+    let consoleWarn = console.warn;
+    let consoleError = console.error;
+
+    let $controls = $(".expandControls");
+    $controls.append($.toggler({id: "green", color_on: "#32CD32", color_off: "#66CDAA", on: true}));
+    $controls.append($.toggler({id: "blue", color_on: "#4169E1", color_off: "#ADD8E6"}));
+    $controls.append($.toggler({id: "red", color_on: "#FF0000", color_off: "#F08080"}));
+    
+    let $log = $(".expandLog");
+    function writeLog(verb, message) {
+      if ($(".expandPanel").showing()) {
+        var color;
+        switch(verb) {
+          case "log": color = "black"; break;
+          case "info": color = "green"; break;
+          case "warn": color = "blue"; break;
+          case "error": color = "red"; break;
+        }
+        
+        if ((color === "black") || ($("#" + color).toggled())) {
+          let $message = $("<div></div>");
+          $message.html(message);
+          $message.css("color", color);
+          
+          $log.append($message);
+          $log.scrollTop($log.prop("scrollHeight"));
+        }
+      }
+      else {
+        switch(verb) {
+          case "log": consoleLog(message); break;
+          case "info": consoleInfo(message); break;
+          case "warn": consoleWarn(message); break;
+          case "error": consoleError(message); break;
+        }
+      }
+    }
+
+    $(".deleteButton").click(function() {
+      $log.empty();
+    });
+    
+    console.log = function(message) {
+      writeLog("log", message);
+    }
+    console.info = function(message) { writeLog("info", message); }
+    console.warn = function(message) { writeLog("warn", message); }
+    console.error = function(message) { writeLog("error", message); }
+    
+    let $expandButton = $(".expandButton");
+    let $expandPanel = $(".expandPanel");
+    
+    $expandButton.parent().append($expandButton);
+    $expandButton.click(function() {
+      $expandPanel.toggle();
+    });
+  });
+</script>
+    
+<div class="expandButton"></div>
+<div class="expandPanel">
+  <div class="expandControls">
+    <div class="deleteButton">&#x267B;</div>
+  </div>
+  <div class="expandLog"></div>
+</div>

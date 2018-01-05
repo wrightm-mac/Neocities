@@ -1,0 +1,851 @@
+body {
+  font-family: Georgia, serif;
+  /*font-family: Verdana, Geneva, sans-serif;*/
+	font-size: 120%;
+	letter-spacing: 2px;
+	line-height: 1.45em;
+	font-weight: normal;
+	font-style: normal;
+	text-transform: none;
+}
+
+p {
+  margin-top: 5px;
+  margin-bottom: 40px;
+}
+
+p::first-letter {
+  font-size: 250%;
+  font-weight: bold;
+  
+  float: left;
+  position: relative;
+  
+  margin-right: 1px;
+}
+
+.waitGraphic {
+  position: fixed;
+  top:0px;
+  right:0px;
+  width:100%;
+  height:100%;
+  background-image: url('/images/waiting.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 10000000;
+}
+
+a.siteLink:link, a.siteLink:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  text-decoration: underlined;
+  color: #6495ED;
+}
+
+a.externalLink:link, a.externalLink:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  text-decoration: none;
+  color: green;
+}
+
+a.downloadLink:link, a.downloadLink:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  text-decoration: none;
+  color: red;
+}
+
+.headerLink, .headerLinkSelected, .headerLinkDisabled {
+  text-decoration: none;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.headerLink {
+  color: #6495ED;
+}
+
+.headerLinkSelected {
+  color: black;
+}
+
+.headerLinkDisabled {
+  color: #e8effc;
+}
+
+.headerPicture {
+  position: fixed;
+  left: 0;
+  top: 0;
+  padding-top: 25px;
+  padding-left: 15px;
+}
+
+.headerTitle {
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-decoration: underline;
+}
+
+.headerNavigation {
+  font-size: 50%;
+}
+
+.header {
+  opacity: 0.85;
+  
+  border-radius: 6px;
+  border: 1px solid lightgray;
+  
+  margin: 2px;
+  
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 99%;
+  height: 72px;
+  
+  background: white;
+  
+  font-size: 200%;
+  text-align: center;
+  vertical-align: middle;
+  
+  padding-top: 12px;
+}
+
+.contentSingle, .contentMulti {
+  margin-top: 110px;
+  margin-bottom: 0px;
+  margin-left: 5%;
+  margin-right: 5%;
+  
+  min-height: 800px;
+  min-width: 800px;
+  
+  color: black;
+  text-align: justify;
+}
+
+.contentSingle {
+}
+
+.contentMulti {
+  column-count: 2;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid;
+  -o-column-break-inside: avoid;
+  
+  column-gap: 50px;
+  column-rule-style: solid;
+  column-rule-color: lightgray;
+  column-rule-width: 1px;
+}
+
+.footer {
+  margin-top: 6px;
+  width: 100%;
+  text-align: center;
+  font-size: 60%;
+  color: darkgray;
+}
+
+a.emailLink:link {
+  color: darkgray;
+  text-decoration: none;
+}
+
+.userCapsule {
+  cursor: pointer;
+  position: fixed;
+  right: 0;
+  top: 0;
+  margin-top: 30px;
+  margin-right: 16px;
+
+  font-family: Verdana, Geneva, sans-serif;
+	font-size: 90%;
+	letter-spacing: 0px;
+  
+  border-radius: 5px;
+  background: #00cc66;
+  color: white;
+  
+  padding-top: 1px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 2px;
+}
+
+h1 {
+  font-size: 150%;
+  text-decoration: underline;
+  text-align: center;
+  width: 100%;
+}
+
+h2 {
+  font-size: 120%;
+  text-decoration: underline;
+  text-align: left;
+}
+
+h1.links {
+  margin-top: 30px;
+  margin-bottom: 5px;
+
+  font-family: Verdana, Geneva, sans-serif;
+	font-size: 120%;
+	text-decoration: underline;
+}
+
+hr {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  color: lightgray;
+}
+
+ol.links {
+  font-family: Verdana, Geneva, sans-serif;
+  margin-top: 0px;
+  margin-left: 30px;
+  margin-bottom: 40px;
+}
+
+.disclaimer, .smallprint {
+  margin: 0px;
+  font-size: 65%;
+  font-style: italic;
+	letter-spacing: 0px;
+	line-height: 1.1em;
+	color: darkgray;
+}
+
+.disclaimer {
+  width: 100%;
+  text-align: center;
+  padding: 7px 6px 5px 6px;
+}
+
+.infoBlock {
+  font-size: 90%;
+  background-color: #F0F8FF;
+  color: black;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+  margin-left: 8px;
+  margin-right: 8px;
+  padding: 8px;
+}
+
+.standardButton, .smallButton {
+  font-family: Verdana, Geneva, sans-serif;
+	font-size: 100%;
+	letter-spacing: 0px;
+  
+  text-align: center;
+  vertical-align: middle;
+  
+  cursor: pointer;
+
+  border-radius: 5px;
+  background: #6495ED;
+  color: white;
+  
+  width: 80px;
+  height: 30px;
+  
+  margin: 2px 0 0 0;
+  padding: 2px 24px 2px 24px;
+}
+
+.standardButton {
+	font-size: 100%;
+  
+  width: 90px;
+  height: 30px;
+  
+  padding-top: 1px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 2px;
+}
+
+.smallButton {
+	font-size: 60%;
+  
+  width: 50px;
+  height: 20px;
+  
+  padding-top: 1px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 2px;
+}
+
+.standardInput {
+  font-family: Verdana, Geneva, sans-serif;
+	font-size: 110%;
+	letter-spacing: 0px;
+	
+	border-radius: 5px;
+	border-width: 1px;
+	border-color: #6495ED;
+	
+	margin: 2px;
+	padding: 3px;
+	
+	width: 99%;
+}
+
+.standardInputCluster {
+  white-space: nowrap;
+  padding: 1px;
+	
+	border-radius: 5px;
+	border-style: none;
+	border-width: 1px;
+	border-color: #6495ED;
+	
+	width: 100%;
+}
+
+::-webkit-input-placeholder { color:  #B0E0E6; }
+::-moz-placeholder { color: #B0E0E6; } /* firefox 19+ */
+:-ms-input-placeholder { color: #B0E0E6; } /* ie */
+input:-moz-placeholder { color: #B0E0E6; }
+
+
+
+/* TABLES --------------------------------------------------- */
+
+
+.standardTable {
+  border-radius: 5px;
+  font-family: Verdana, Geneva, sans-serif;
+  width: 100%;
+}
+
+.standardTableHeader {
+  border-radius: 5px;
+  background-color: #6495ED;
+  color: white;
+  text-align: center;
+}
+
+.standardTableHeaderCell {
+  border-radius: 5px;
+}
+
+.standardTableRow, .standardTableRowOdd, .standardTableRowEven {
+  border-radius: 3px;
+  cursor: pointer;
+  vertical-align: top;
+}
+
+.standardTableRowOdd {
+  background-color: #e8effc;
+}
+
+.standardTableRowEven {
+  background-color: #d1dffa;
+}
+
+
+
+/* LINKS ---------------------------------------------------- */
+
+
+a.externalLinkGreen:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: green;
+}
+
+a.externalLinkGreen:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: green;
+}
+
+a.externalLinkOrange:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #FF4500;
+}
+
+a.externalLinkOrange:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #FF4500;
+}
+a.externalLinkPurple:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #8A2BE2;
+}
+
+a.externalLinkPurple:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #8A2BE2;
+}
+
+a.externalLinkBlue:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #6495ED;
+}
+
+a.externalLinkBlue:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #6495ED;
+}
+
+a.externalLinkLightGreen:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #90EE90;
+}
+
+a.externalLinkLightGreen:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #90EE90;
+}
+
+a.externalLinkViolet:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #DB7093;
+}
+
+a.externalLinkViolet:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #DB7093;
+}
+
+a.externalLinkCrimson:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #DC143C;
+}
+
+a.externalLinkCrimson:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #DC143C;
+}
+
+a.externalLinkThistle:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #D8BFD8;
+}
+
+a.externalLinkThistle:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #D8BFD8;
+}
+
+a.externalLinkRed:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #FF0000;
+}
+
+a.externalLinkRed:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #FF0000;
+}
+
+a.externalSpringGreen:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #00FF7F;
+}
+
+a.externalSpringGreen:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #00FF7F;
+}
+
+a.externalLinkSlateBlue:link {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #6A5ACD;
+}
+
+a.externalLinkSlateBlue:visited {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 100%;
+  text-decoration: none;
+  color: #6A5ACD;
+}
+
+
+/* LISTS ------------------------------------------------------ */
+
+.servicesList {
+  padding: -10px 0 0 10px;
+}
+
+.servicesListItem {
+}
+
+
+/* BOOKS ------------------------------------------------------ */
+
+img.bookThumbnail {
+  float: left;
+  width: 120px;
+  margin-right: 20px;
+  margin-bottom: 2px;
+  padding-top: 18px;
+}
+
+span.bookTitle {
+  font-weight: bold;
+}
+
+span.bookBlurb {
+  font-style: italic;
+}
+
+
+/* BOOKS ------------------------------------------------------ */
+
+.advertBlock {
+  cursor: pointer;
+  width: 95%;
+  height: 300px;
+  background-color: #ADD8E6;
+  margin: 10px;
+  margin-bottom: 50px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.advertContent {
+  color: darkgray;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 80%;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+/* WEATHER: ---------------------------------------------------- */
+
+.weatherContent {
+  font-family: Verdana, Geneva, sans-serif;
+
+  border-radius: 10px;
+  border-color: black;
+  border-width: 2px;
+  border-style: solid;
+  
+  margin-bottom: 6px;
+  padding: 8px;
+  
+  width: 600px;
+  height: 200px;
+}
+
+.weatherIcon {
+  background-color: lightblue;
+  
+  border-radius: 10px;
+  border-color: lightgray;
+  border-width: 1px;
+  border-style: solid;
+  
+  margin-bottom: 9px;
+  
+  width: 200px;
+  height: 160px;
+}
+
+.weatherIconImage {
+  width: 100%;
+  height: 100%;
+}
+
+.weatherStatus {
+  background-color: pink;
+  
+  border-radius: 10px;
+  border-color: lightgray;
+  border-width: 1px;
+  border-style: solid;
+  
+  width: 200px;
+  height: 30px;
+  
+  text-align: center;
+  vertical-align: middle;
+}
+
+.weatherInputGroup {
+  border-color: black;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
+  
+  margin: 8px;
+  padding: 8px;
+}
+
+.weatherInputParameterGroup {
+}
+
+.weatherInput {
+  width: 70%;
+  margin: 5px;
+}
+
+.weatherInputSelect {
+  width: 95%;
+  margin: 5px;
+}
+
+.weatherInputLabel {
+  float: left;
+  width: 20%;
+  margin-right: 10px;
+  text-align: right;
+}
+
+.weatherButton {
+	font-size: 100%;
+	letter-spacing: 0px;
+  
+  text-align: center;
+  vertical-align: middle;
+  
+  cursor: pointer;
+
+  border-radius: 5px;
+  background: #00cc66;
+  color: white;
+  
+  width: 80px;
+  height: 30px;
+  
+  padding-top: 1px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 2px;
+}
+
+.weatherTable {
+}
+
+.weatherTableRowIcon {
+  width: 8%;
+  padding: 4px 0 0 0;
+  text-align: center;
+}
+
+.weatherTableRowDay {
+  width: 20%;
+  padding: 12px 12px 0 12px;
+  text-align: center;
+}
+
+.weatherTableRowStatus {
+  padding: 12px 12px 0 12px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.weatherTableRowTemp {
+  width: 20%;
+  text-align: right;
+  padding: 12px 5px 0 0;
+}
+
+.weatherDetailTable {
+  border: collapse;
+  border-width: 0;
+  font-size: 80%;
+  font-weight: normal;
+  padding: 6px 0 0 10px;
+  width: 100%;
+}
+
+.weatherDetailRowOdd {
+  background-color: #e8effc;
+}
+
+.weatherDetailRowEven {
+  background-color: #d1dffa;
+}
+
+.weatherDetailTableName {
+  text-align: left;
+  width: 80%;
+}
+
+.weatherDetailTableValue {
+  text-align: right;
+}
+
+.weatherBubble {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 50%;
+  float: left;
+  width: 90px;
+  height: 90px;
+  background-color: white;
+  color: black;
+  border-radius: 6px;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  margin: 0 10px 0 10px;
+  box-shadow: 4px 4px 9px #aaaaaa;
+  /*transform: rotate(-3deg);*/
+}
+
+.weatherBubbleIcon {
+  float: block;
+  display: block;
+  margin: auto;
+  margin-bottom: -10px;
+  width: 80%;
+  max-width: 100%;
+  height: auto;
+}
+
+.weatherBubbleText {
+  float: none;
+  width: 100%;
+  height: 12px;
+  text-align: center;
+}
+
+
+/* Currency Table --------------------------- */
+
+table.currencies {
+  display: none;
+  border-radius: 5px;
+  font-family: Verdana, Geneva, sans-serif;
+  width: 100%;
+}
+
+.currencyHeader {
+  border-radius: 5px;
+}
+
+.currencyRowOdd, .currencyRowEven {
+  cursor: pointer;
+}
+
+.currencyRowOdd {
+  background-color: #e8effc;
+}
+
+.currencyRowEven {
+  background-color: #d1dffa;
+}
+
+.currencyHeaderSymbol, .currencyHeaderName, .currencyHeaderRate {
+  background-color: #6495ED;
+  color: white;
+  text-align: center;
+}
+
+.currencyHeaderSymbol {
+  width: 15%;
+}
+
+.currencyHeaderName {
+}
+
+.currencyHeaderRate {
+  width: 25%;
+}
+
+.currencySymbol, .currencyName, .currencyRate {
+  vertical-align: top;
+}
+
+.currencySymbol {
+  text-align: center;
+}
+
+.currencyName {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.currencyRate {
+  text-align: right;
+  padding-right: 12px;
+}
+
+table.currencyServiceUsage {
+  display: none;
+  border-radius: 5px;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 70%;
+  background-color: lightgray;
+  border-spacing: 0px;
+  width: 50%;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
+.currencyServiceUsageHeader {
+  background-color: darkgray;
+  color: white;
+  font-weight: bold;
+  border-radius: 3px;
+}
+
+.currencyServiceUsageName {
+  font-weight: bold;
+  text-align: right;
+  padding-right: 10px;
+}
+
+.currencyServiceUsageValue {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.currencyTableCell {
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Journey Planner</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="/style_transport.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="/script/transportapi.js"></script>
+  </head>
+  <body>
+  
+    <script>
+      
+      let journeyTemplate = {
+        id: "journeyGrid",
+        css: ["standardTable", "weatherTable"],
+        header: {
+          css: ["standardTableHeader"]
+        },
+        row: {
+          css: ["standardTableRowEven", "journeyRow"],
+          altcss: "standardTableRowOdd"
+        },
+        columns: [{
+          header: {
+            text: "",
+            css: "standardTableHeader"
+          },
+          after: function(rowdata) {
+            $(this).attr("title", $.capitalise(rowdata.mode));
+          },
+          image: {
+            css: "journeyIconCell",
+            datafield: "mode",
+            transform: function(datafield, rowdata) {
+              switch(datafield) {
+                case "foot": return "/images/transport/walk.png";
+                case "train": return "/images/transport/train.png";
+                case "tube": return "/images/transport/subway.png";
+                case "bus": return "/images/transport/bus.png";
+                case "tram": return "/images/transport/tram.png";
+              }
+            }
+          }
+        }, {
+          header: {
+            text: "From",
+            css: "standardTableHeader"
+          },
+          css: ["standardTableRow", "journeyDirectionCell"],
+          datafield: "from_point_name",
+          transform: function(datafield, rowdata, rowindex) {
+            return (rowindex > 0) ? datafield: "&nbsp;";
+          },
+          after: function(rowdata) {
+            var tooltip;
+            if (rowdata.destination) {
+              tooltip = rowdata.destination;
+            }
+            if (rowdata.line_name) {
+              tooltip = (tooltip || "") + " (" + rowdata.line_name + ")";
+            }
+            if (tooltip) {
+              $(this).attr("title", tooltip );
+            }
+          }/*,
+          link: {
+            datafield: ["from_point_name", "to_point_name"],
+            basepath: "/services/transport/traindepart.html?station=",
+            transform: function(datafield, rowdata) {
+              if (rowdata.mode === "train") {
+                return datafield;
+              }
+            }
+          }*/
+        }, {
+          header: {
+            text: "To",
+            css: ["standardTableHeader", "journeyDirectionCell"]
+          },
+          css: ["standardTableRow", "journeyDirectionCell"],
+          datafield: "to_point_name",
+          transform: function(datafield, rowdata, rowindex, dataset) {
+            return (rowindex < dataset.length - 1) ? datafield: "&nbsp;";
+          },
+        }, {
+          header: {
+            text: "Depart",
+            css: "standardTableHeader"
+          },
+          css: ["standardTableRow", "journeyTimeCell"],
+          datafield: "departure_time"
+        }, {
+          header: {
+            text: "Arrive",
+            css: "standardTableHeader"
+          },
+          css: ["standardTableRow", "journeyTimeCell"],
+          datafield: "arrival_time",
+          after: function(rowdata) {
+            $(this).attr("title", "Duration: " + rowdata.duration);
+          }
+        }]
+      };
+      
+      
+      function doJourneySearch(coordFrom, coordTo) {
+        $("#journeyResults").empty();
+        
+        searchTransport("journey", {from: coordFrom, to: coordTo}, function(success, data) {
+          if (success) {
+            let journey = (typeof(data) === "string") ? JSON.parse(data) : data;
+            
+            let $journeyResults = $("#journeyResults");
+            $.each(journey.routes, function(index, route) {
+              let timeparts = route.duration.split(":");
+              let displayTime = (timeparts.length >= 2) ? (timeparts[0] + "h:" + timeparts[1] + "m") : "";
+              $journeyResults.append("<div class='trainSectionName'>Journey Time - " + displayTime + "</div>");
+              $journeyResults.table(journeyTemplate, route.route_parts);
+              $journeyResults.append("<br/>");
+            });
+            
+            $("html,body").animate({ scrollTop: $journeyResults.scrollTop() }, 2000);
+          }
+        });
+        
+      }
+      
+      $(function() {
+        $("#transportSearch").click(function() {
+          let coordFrom = $("input[name=fromPanel]:checked").val()
+          let coordTo = $("input[name=toPanel]:checked").val()
+          
+          if (coordFrom && coordTo) {
+            doJourneySearch(coordFrom, coordTo);
+          }
+        });
+        
+        $("input:text").enterkey(function (event) {
+          let $this = $(this);
+          let panelName = $this.attr("selectionpanel");
+          let $panel = $("#" + panelName);
+          $panel.empty();
+          
+          searchTransport("places", {query: $this.val()}, function(success, location) {
+            if (success) {
+              $panel.table({
+                row: {
+                  before: function(rowdata) {
+                    if (rowdata.osm_id) {
+                      return false;
+                    }
+                  }
+                },
+                columns: [{
+                  css: "locationSelect",
+                  datafield: "name",
+                  transform: function(datafield, rowdata, rowindex) {
+                    return "<input type='radio'"
+                                + " name='" + panelName
+                                + "' value='" + getLocationCoordinateString(rowdata) + "'>"
+                                + getLocationDisplayName(rowdata)
+                              + "</input>";
+                  },
+                  click: function() {
+                    $(this).find("input:radio").prop("checked", true);
+                  }
+                }]
+              }, location.member);
+              
+              $("input[name=" + panelName + "]").first().prop("checked", true);
+            }
+          });
+          
+          $panel.show();
+        });
+      });
+    </script>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      
+      <h1>Journey Planner</h1>
+      
+      <div>
+        <table class="standardInputCluster">
+          <tr>
+            <td style="width: 100%;">
+              <input id="journeyFrom" type="text" placeholder="From" selectionpanel="fromPanel" class="standardInput"/>
+              <div id="fromPanel" class="journeyLocationSelect" style="display:none;"></div>
+            </td>
+            <td style="vertical-align:top;">
+              <div id="transportSearch" class="standardButton">Search
+            </div>
+          </tr>
+          <tr>
+            <td style="width: 100%;">
+              <input id="journeyTo" type="text" placeholder="To" selectionpanel="toPanel" class="standardInput"/>
+              <div id="toPanel" class="journeyLocationSelect" style="display:none;"></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      
+      <div id="journeyResults">
+      </div>
+    
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

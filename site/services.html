@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Services</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+  </head>
+  <body>
+
+    <script>
+    </script>
+    
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentMulti">
+  
+      <div>
+        <div fragment="/fragments/weather-bubble.html"></div>
+        <p>
+          Weather <a href="services/weather.html" class="siteLink">service</a>.
+          Uses the <a href="https://openweathermap.org/" target="_newwindow" class="externalLinkSlateBlue">Open Weather Map</a> web service to provide a 16-day forecast for any city. Enter the name of a city for a forecast of that location. Drill down on a specific day for more details about the weather for that day.
+        </p>
+      </div>
+      
+      <p>
+        Foreign Exchange Rate <a href="services/fexchange.html" class="siteLink">service</a>.
+        Uses a free subscription to the <a href="https://openexchangerates.org/" target="_newwindow" class="externalLinkSlateBlue">Open Exchange Rates</a> service to provide exchange rate information for a large number of currencies. At the free subscription level, exchange rates are only available against the US Dollar. Drill down on a specific currency for the historical exchange rate.
+      </p>
+      
+      <br/>
+      
+      <p>
+        Oxford English Dictionary <a href="services/oed.html" class="siteLink">service</a>.
+      </p>
+      
+      <p>Various transport related things, using the TransportAPI service:
+        <ul class="servicesList">
+          <li class="servicesListItem"><a href="services/transport/traindepart.html" class="siteLink">Train Departures</a>.</li>
+          <li class="servicesListItem"><a href="services/transport/journeyplan.html" class="siteLink">Journey Planner</a>.</li>
+        </ul>
+      </p>
+      
+      <p>
+        Bitcoin Exchange services:
+        <ul class="servicesList">
+          <li class="servicesListItem"><a href="services/bitcoin.html" class="siteLink">Exchange Rate History by Currency</a>.</li>
+          <li class="servicesListItem"><a href="services/bitcoinex.html" class="siteLink">Basket of Exchange Rates</a> - drill down for history.</li>
+        </ul>
+      </p>
+      
+      <p>
+        Widget <a href="services/widgets.html" class="siteLink">stuff</a>.
+      </p>
+      
+      <p>
+        An example <a href="services/editor.html" class="siteLink">implementation</a> of the Underscore Javascript library.
+      </p>
+  
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

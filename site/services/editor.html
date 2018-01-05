@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Another Underscore</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=desert"></script>
+  </head>
+  <body>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      <h1>Another Underscore</h1>
+      
+      <style>
+        li.L0, li.L1, li.L2, li.L3,
+        li.L5, li.L6, li.L7, li.L8 {
+          list-style-type: decimal !important;
+        }
+      </style>
+      
+      <p>
+        Here's an attempt to reproduce the functionality of the <a href="http://underscorejs.org/" target="_new" class="externalLinkCrimson">Underscore</a> Javascript library. I've not looked at the source code, so all the code here is based on the documentation for the individual functions at that link. I'll be working, roughly, from the top to the bottom of the functions listed in the sidebar.
+      </p>
+      
+      <hr/>
+      
+      <p>
+        Firstly, create a class to hold the functionality. I've decided that the only method that I need initially is a poor copy of jQuery <code>$.extend()</code>. This will allow me to add the new functionality a small chunk at a time. The first thing that I'll add is a simple <code>log</code> function. Note that, from this point, the <code>_</code> object exists in the global namespace, and I'll be using <code>extend</code> to add the new functionality.
+      </p>
+      
+      <pre class="prettyprint linenums">
+  function Underscore() {
+    // Provide the facility to acquire other objects'
+    // properties...
+    this.extend = function(target, extension) {
+      if (! extension) {
+        extension = target;
+        target = this;
+      }
+      
+      for (let index in extension) {
+        target[index] = extension[index];
+      }
+      
+      return target;
+    }
+    
+    // Use given arguments to extend this class...
+    for (let index in arguments) {
+      this.extend(arguments[index]);
+    }
+  }
+  
+  // Instantiate the Underscore container...
+  let _ = new Underscore({
+    log: function(message) {
+      if (typeof(message) === "string") {
+        console.log("log: " + message);
+      }
+      else {
+        var properties = "";
+        for (let index in message) {
+          properties += "[key=" + index + "][value=" + message[index] + "]";
+        }
+        
+        console.log("log: " + properties);
+      }
+    }
+  });
+  
+  _.log("hello, world!");
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The first function to be added is <code>each</code>. This is an easy one, and the same code iterates over both the values in an array, and the properties of an object. So, no special-case work needs to be done. Like all the functions that take a function argument, the context/scope is optional and, if not given, will default to <code>this</code>. Having defined <code>each</code>, another call to <code>extend</code> is made to add the <code>forEach</code> alias.
+    </p>
+    
+    <pre class="prettyprint linenums">
+ _.extend({
+    each: function(list, iteratee, context) {
+      for (let index in list) {
+        iteratee.call(context || this, list[index], index, list);
+      }
+    }
+  });
+  
+  _.extend({
+    forEach: _.each
+  });
+  
+  _.forEach([9, 8, 7], function(value, index, list) {
+    _.log("forEach [index=" + index + "][value=" + value + "]");
+  });
+  
+
+  _.forEach({one: 1, two: 2, three: 3}, function(value, index, list) {
+    _.log("forEach [index=" + index + "][value=" + value + "]");
+  });
+});
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      Next is <code>map</code>. Very similar to <code>each</code>, but if the iteratee returns anything, it is added to the array of mapped values that is returned. Note that I could have used the previously defined <code>each</code> to do the iteration.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    map: function(list, iteratee, context) {
+      let mapped = [];
+      
+      for (let index in list) {
+        let v = iteratee.call(context || this, list[index], index, list);
+        if (v) {
+          mapped.push(v);
+        }
+      }
+      
+      return mapped;
+    }
+  });
+  
+  _.extend({
+    collect: _.map
+  });
+  
+  let x = _.collect([1, 2, 3], function(value, index) {
+    if ((index % 2) === 0) {
+      return value * 10;
+    }
+  });
+  
+  _.log(x);
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      A bit more complicated is <code>reduce</code>. This involves chaining a calculation through an array of values. I've added a guard against the iteratee failing to return a value, otherwise the <code>memo</code> field would be reset to the next (if any) value in the list. Not sure if this is the correct way of dealing with this.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    reduce: function(list, iteratee, memo, context) {
+      for (let index in list) {
+        if (! memo) {
+          memo = list[index];
+          continue;
+        }
+        
+        reduction = iteratee.call(context || this,
+                              memo, list[index], index, list);
+        if (reduction !== undefined) {
+          memo = reduction;
+        }
+      }
+      
+      return memo;
+    }
+  });
+  
+  _.extend({
+    inject: _.reduce,
+    foldl: _.reduce
+  });
+  
+  let sum = _.reduce([1, 2, 3, 4, 5, 6], function(sum, val) {
+    return sum + val;
+  });
+  
+  _.log("reduce [sum=" + sum + "]");
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>reduceRight</code> function does the same thing as <code>reduce</code>, except that it starts at the tail of the list and works up to the head.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    reduceRight: function(list, iteratee, memo, context) {
+      for (let index = list.length - 1; index >= 0; --index) {
+        if (! memo) {
+          memo = list[index];
+          continue;
+        }
+        
+        reduction = iteratee.call(context || this,
+                              memo, list[index], index, list);
+        if (reduction !== undefined) {
+          memo = reduction;
+        }
+      }
+      
+      return memo;
+    }
+  });
+  
+  _.extend({
+    foldr: _.reduceRight
+  });
+
+  let list = [[0, 1], [2, 3], [4, 5]];
+  let flat = _.reduceRight(list, function(a, b) { return a.concat(b); }, []);
+  
+  _.log("reduceRight - " + flat);
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      Next up is <code>find</code>. Simple.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    find: function(list, predicate, context) {
+      for (let index in list) {
+        if (predicate.call(context || this, list[index], index, list)) {
+          return list[index];
+        }
+      }
+    }
+  });
+  
+  _.extend({
+    detect: _.find
+  });
+  
+  let even = _.find([1, 2, 3, 4, 5, 6],
+                      function(num){ return num % 2 == 0; });
+  
+  _.log("find - " + even);
+    </pre>
+
+    <hr/>
+    
+    <p>
+      The <code>filter</code> function is similar to <code>find</code> except that it scans the entire list and returns all matches.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    filter: function(list, predicate, context) {
+      let filtered = [];
+      
+      for (let index in list) {
+        if (predicate.call(context || this, list[index], index, list)) {
+          filtered.push(list[index]);
+        }
+      }
+      
+      return filtered;
+    }
+  });
+  
+  _.extend({
+    select: _.filter
+  });
+  
+  let evens = _.filter([1, 2, 3, 4, 5, 6],
+                        function(num){ return num % 2 == 0; });
+  
+  _.log("filter - " + evens);
+    </pre>
+
+    <hr/>
+    
+    <p>
+      The <code>where</code> function is a bit trickier. It uses a nested loop to test the properties to be matched against each item in the list.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    where: function(list, properties) {
+      let matched = [];
+      
+      for (let index in list) {
+        let item = list[index];
+        
+        var equal = true;
+        for (let match in properties) {
+          if (item[match] !== properties[match]) {
+            equal = false;
+            break;
+          }
+        }
+        
+        if (equal) {
+          matched.push(item);
+        }
+      }
+      
+      return matched;
+    }
+  });
+  
+  let plays = [
+    {title: "Twelfth Night", author: "Shakespeare", year: 1609},
+    {title: "Cymbeline", author: "Shakespeare", year: 1611},
+    {title: "Death of a Salesman", author: "Miller", year: 1950},
+    {title: "The Tempest", author: "Shakespeare", year: 1611}
+  ];
+
+  let shakespeare = _.where(plays,
+                            {author: "Shakespeare", year: 1611});
+  _.each(shakespeare, function(play) {
+    console.log("where - [play=" + play.title + "]");
+  });
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>findWhere</code> function is like the <code>where</code> function, except that it returns after find the first match.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    findWhere: function(list, properties) {
+      for (let index in list) {
+        let item = list[index];
+        
+        var equal = true;
+        for (let match in properties) {
+          if (item[match] !== properties[match]) {
+            equal = false;
+            break;
+          }
+        }
+        
+        if (equal) {
+          return item;
+        }
+      }
+    }
+  });
+  
+  let play = _.findWhere(plays,
+                      {author: "Shakespeare", year: 1611});
+  console.log("findWhere - [play=" + play.title + "]");
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>reject</code> function is the oppposite of <code>filter</code>, so the code is very similar.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    reject: function(list, predicate, context) {
+      let rejected = [];
+      
+      for (let index in list) {
+        if (! predicate.call(context || this,
+                                list[index], index, list)) {
+          rejected.push(list[index]);
+        }
+      }
+      
+      return rejected;
+    }
+  });
+  
+  let odds = _.reject([1, 2, 3, 4, 5, 6], function(num){ return num % 2 == 0; });
+  
+  _.log("reject - " + odds);
+    </pre>
+  
+    <hr/>
+    
+    <p>
+      The <code>every</code> function. According to the documentation, the predicate is optional. So, in the case where no predicate is given, <code>true</code> is returned. I don't know whether this is correct.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    every: function(list, predicate, context) {
+      if (predicate) {
+        for (let index in list) {
+          if (! predicate.call(context || this,
+                                list[index], index, list)) {
+            return false;
+          }
+        }
+      }
+      
+      return true;
+    }
+  });
+  
+  _.extend({
+    all: _.every
+  });
+  
+  let result = _.every([2, 4, 5],
+                        function(num) { return num % 2 == 0; });
+  _.log("every - " + result);
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>some</code> function. Again, the predicate is optional. Where no predicate is given, defaults to returning <code>false</code>.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    some: function(list, predicate, context) {
+      if (predicate) {
+        for (let index in list) {
+          if (predicate.call(context || this,
+                                list[index], index, list)) {
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    }
+  });
+  
+  _.extend({
+    any: _.some
+  });
+  
+  let result = _.every([2, 4, 5],
+                        function(num) { return num % 2 == 0; });
+  _.log("some - " + result);
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>contains</code> function. Uses 2 different styles of loop, depending upon whether <code>fromIndex</code> is supplied. Have to do this, because starting from a specific index isn't possible (is it?) when iterating through the properties of an object.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    contains: function(list, value, fromIndex) {
+      if (fromIndex) {
+        for (let index = fromIndex; index < list.length; ++index) {
+          if (list[index] === value) {
+            return true;
+          }
+        }
+      }
+      else {
+        for (let index in list) {
+          if (list[index] === value) {
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    }
+  });
+  
+  _.extend({
+    includes: _.contains
+  });
+  
+  let has = _.contains([1, 2, 3, 4, 5], 3);
+  _.log("contains - " + has);
+  
+  let hasO = _.contains({"one":1, "two":2, "three":3, "four":4, "five":5}, 7);
+  _.log("containsO - " + hasO);
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>invoke</code> function. I need to figure out the correct way to pass the arguments to the invoked method. If the invoked method does not return a value, the results array that is returned remains unchanged for that invocation.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    invoke: function(list, methodName, arguments) {
+      let results = [];
+      
+      for (let index in list) {
+        let item = list[index];
+        
+        let result = item[methodName](arguments);
+        if (result !== undefined) {
+          results.push(result);
+        }
+      }
+      
+      return results;
+    }
+  });
+  
+  let sorted = _.invoke([[5, 1, 7], [3, 2, 1]], 'sort');
+  _.log("invoke - " + sorted);
+    </pre>
+
+    <hr/>
+    
+    <p>
+      The <code>pluck</code> method. Only the values of properties that exist and are defined will be added to the returned array, so it's possible (if the property name is not applicable to any object in the list) that an empty array may be returned. The returned array may contain duplicate values.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    pluck: function(list, propertyName) {
+      let plucked = [];
+      
+      for (let index in list) {
+        let item = list[index];
+        
+        let property = item[propertyName];
+        if (property !== undefined) {
+          plucked.push(property);
+        }
+      }
+      
+      return plucked;
+    }
+  });
+  
+  let stooges = [{name: 'moe', age: 40},
+                  {name: 'larry', age: 50},
+                  {name: 'curly', age: 60}];
+  let p = _.pluck(stooges, 'name');
+  _.log("pluck - " + p);
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>min</code> and <code>max</code> methods are so similar that it makes sense to hoist the bulk of the code into a common function. This could have been done using the previously defined <code>reduce</code> function, but I'm using a specially created <code>listCompare</code> function because I want to be able to handle the special case where only <code>number</code> values are compared. Whilst <code>reduce</code> could deal with this, it's simpler to isolate the code here. I have to call <code>_.extend()</code> twice here, so that the <code>listCompare</code> method is in scope at the point it's needed.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    listCompare: function(list, iteratee, context, startValue, predicate) {
+      var result = startValue;
+
+      for (let index in list) {
+        let value = iteratee
+                    ? iteratee.call(context || this, list[index])
+                    : list[index];
+        
+        if (typeof(value) === "number") {
+          result = predicate(result, value) ? result : value;
+        }
+      }
+
+      return result;
+    }
+  });
+  
+  _.extend({
+    max: function(list, iteratee, context) {
+      return _.listCompare(list, iteratee, context,
+                         -Infinity, function(a, b) { return a > b; } )
+    },
+  
+    min: function(list, iteratee, context) {
+        return _.listCompare(list, iteratee, context,
+                           Infinity, function(a, b) { return a < b; } )
+      }
+  });
+
+  let stooges = [{name: 'moe', age: 40},
+                 {name: 'larry', age: 50},
+                 {name: 'jerry', age: 80},
+                 {name: 'billy', age: 20},
+                 {name: 'curly', age: 60}];
+  
+  let max = _.max(stooges, function(stooge){ return stooge.age; });
+  _.log("max - " + max);
+
+  let min = _.min(stooges, function(stooge){ return stooge.age; });
+  _.log("min - " + min);
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>sortBy</code> function operates on objects. The field to be sorted by can be specified by name (as a string), or by a selector function that operates on each member of the list. There's a few holes in this implementation; if a named field is not present on the object being sorted, or the named field isn't a string or number, or the selector function returns something that is not a string or number, then the result of the sort will be unpredictable. Note that this implementation uses the underlying Javascript <code>sort</code> method for arrays, and so the array that is passed in will be modified; this could be prevented by cloning the array argument but, obviously, that has some overhead.
+    </p>
+    
+    <pre class="prettyprint linenums">
+  _.extend({
+    sortBy: function(list, iteratee, context) {
+      list.sort(function(a, b) {
+        var valueA, valueB;
+        if (typeof(iteratee) === "string") {
+          valueA = a[iteratee];
+          valueB = b[iteratee];
+        }
+        else if (typeof(iteratee) === "function") {
+          valueA = iteratee.call(context || this, a, list);
+          valueB = iteratee.call(context || this, b, list);
+        }
+        else {
+          valueA = a;
+          valueB = b;
+        }
+        
+        return (typeof(valueA) === "string")
+                ? valueA.localeCompare(valueB)
+                : (valueA - valueB);
+      });
+      
+      return list;
+    }
+  });
+  
+  let stooges = [{name: 'moe', age: 40},
+                 {name: 'larry', age: 50},
+                 {name: 'jerry', age: 80},
+                 {name: 'billy', age: 20},
+                 {name: 'curly', age: 60}];
+  let sorted = _.sortBy(stooges, function(item) { return item.name });
+  _.each(sorted, function(item) {
+    _.log("sortBy - [name=" + item.name + "][age=" + item.age + "]");
+  });
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>groupBy</code> function. As with <code>sortBy</code>, if the iteratee is incorrect, the results will be unspecified.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    groupBy: function(list, iteratee, context) {
+      let results = {};
+      
+      for (let index in list) {
+        let item = list[index];
+        
+        var key;
+        if (typeof(iteratee) === "string") {
+          key = item[iteratee];
+        }
+        else if (typeof(iteratee) === "function") {
+          key = iteratee.call(context || this, item, list);
+        }
+        else {
+          key = item;
+        }
+        
+        let group = results[key];
+        if (group) {
+          group.push(item);
+        }
+        else {
+          results[key] = [item];
+        }
+      }
+      
+      return results;
+    }
+  });
+  
+  //let groups = _.groupBy(['one', 'two', 'three'], 'length');
+  let groups =_.groupBy([1.3, 2.1, 2.4],
+                        function(num){ return Math.floor(num); });
+  for (let key in groups) {
+    _.log("groupBy - [key=" + key + "][group=" + groups[key] + "]");
+  }
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>indexBy</code> function is similar to <code>groupBy</code>, except that the field to group/index by should be unique across the list.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    indexBy: function(list, iteratee, context) {
+      let results = {};
+      
+      for (let index in list) {
+        let item = list[index];
+        
+        var key;
+        if (typeof(iteratee) === "string") {
+          key = item[iteratee];
+        }
+        else if (typeof(iteratee) === "function") {
+          key = iteratee.call(context || this, item, list);
+        }
+        else {
+          key = item;
+        }
+        
+        results[key] = item;
+      }
+      
+      return results;
+    }
+  });
+  
+  let stooges = [{name: 'moe', age: 40},
+                 {name: 'larry', age: 50},
+                 {name: 'jerry', age: 80},
+                 {name: 'billy', age: 20},
+                 {name: 'curly', age: 60}];
+  let indexed = _.indexBy(stooges, "age");
+  for (let key in indexed) {
+    _.log("indexBy - [key=" + key + "][item=" + indexed[key].name + "]");
+  }
+    </pre>
+    
+    <hr/>
+    
+    <p>
+      The <code>countBy</code> function.
+    </p>
+
+    <pre class="prettyprint linenums">
+  _.extend({
+    countBy: function(list, iteratee, context) {
+      let results = {};
+      
+      for (let index in list) {
+        let item = list[index];
+        
+        var key;
+        if (typeof(iteratee) === "string") {
+          key = item[iteratee];
+        }
+        else if (typeof(iteratee) === "function") {
+          key = iteratee.call(context || this, item, list);
+        }
+        else {
+          key = item;
+        }
+        
+        results[key] = (results[key] || 0) + 1;
+      }
+      
+      return results;
+    }
+  });
+  
+  let counted = _.countBy([1, 2, 3, 4, 5], function(num) {
+    return num % 2 == 0 ? 'even': 'odd';
+  });
+  for (let key in counted) {
+    _.log("indexBy - [key=" + key + "][count=" + counted[key] + "]");
+  }
+    </pre>
+
+
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

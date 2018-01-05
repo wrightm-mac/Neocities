@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Bitcoin</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="/script/standard.js"></script>
+  </head>
+  <body>
+  
+    <script>
+
+      let template = {
+        id: "bitcoinExchange",
+        css: "standardTable",
+        header: {
+          css: "standardTableHeader"
+        },
+        row: {
+          css: "standardTableRowEven",
+          altcss: "standardTableRowOdd"
+        },
+        columns: [{
+          header: {
+            text: "Date",
+            css: "standardTableHeader"
+          },
+          style: [
+            {width: "70%"},
+            {"padding": "0 8px 0 10px"}
+          ],
+          datafield: "date",
+          transform: function(datafield) {
+            let date = new Date(datafield);
+            return date.toNeutral();
+          }
+        }, {
+          header: {
+            text: "Price",
+            css: "standardTableHeader"
+          },
+          style: [
+            {"width": "30%"},
+            {"font-weight": "bold"},
+            {"text-align": "right"},
+            {"padding": "0 10px 0 10px"}
+          ],
+          id: "priceColumn",
+          datafield: "price",
+          transform: function(datafield) {
+            return datafield.toFixed(2).toString().replace(/,/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          },
+          after: function(rowdata, rowindex, dataset) {
+            let currentPrice = rowdata.price;
+            let previousPrice = (dataset[rowindex + 1] || {price: currentPrice}).price;
+            let color = (currentPrice === previousPrice) ? "black" : (currentPrice < previousPrice) ? "red" : "green";
+            $(this).css("color", color);
+          }
+        }]
+      };
+      
+      function doAjax(params, callback, scope) {
+        $.ajax({
+          url: "https://api.coindesk.com/v1/bpi/historical/close.json",
+          data: params,
+          cache: false,
+          crossDomain: true,
+        }).done(function(data, textStatus, jqXHR) {
+            if (callback) {
+              callback.call(scope || this, true, data);
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("searchEventful: fail! [" + errorThrown + "]");
+            
+            if (callback) {
+              callback.call(scope || this, false, errorThrown);
+            }
+        });
+      }
+
+      function doSearch() {
+        doAjax({currency: $("#bitcoinCurrency").val()}, function(success, data) {
+          let $resultsGrid = $("#bitcoinResults");
+          $resultsGrid.find("table").remove();
+
+          if (success) {
+            let json = JSON.parse(data);
+            
+            let prices = [];
+            for (let date in json.bpi) {
+               prices.push({date: date, price: json.bpi[date]});
+            };
+            
+            $resultsGrid.table(template, prices.reverse());
+            
+            $("#bitcoinDisclaimer").html(json.disclaimer);
+            $(".disclaimer").show();
+          }
+          else {
+            $(".disclaimer").hide();
+          }
+        });
+      }
+        
+      $(function() {
+        
+        let $currencySelect = $("#bitcoinCurrency");
+        $.each(currencyList, function(index, item) {
+          let $option = $("<option></option>");
+          $option.attr("value", item.currency);
+          $option.html(item.country);
+          $currencySelect.append($option);
+        });
+          
+        $("#bitcoinSearch").click(function() {
+          doSearch();
+        });
+    
+        $('#bitcoinCurrency').change(function() {
+          doSearch();
+        });
+        
+        $("#bitcoinCurrency").val("GBP");
+        doSearch();
+      });
+    </script>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      
+      <h1>Bitcoin</h1>
+      
+      <div>
+        <table class="standardInputCluster">
+          <tr>
+            <td style="width: 100%;"><select id="bitcoinCurrency" class="standardInput"></select></td>
+            <td><div id="bitcoinSearch" class="standardButton">Search</div></td>
+          </tr>
+        </table>
+      </div>
+      
+      <div id="bitcoinResults"></div>
+
+      <span>
+        <div id="bitcoinDisclaimer" class="disclaimer"></div>
+        <div class="disclaimer">
+          For more information, please visit the <a href="https://www.coindesk.com/" target="_newwindow" class="externalLinkSlateBlue">CoinDesk Bitcoin Index</a> service.
+        </div>
+      </span>
+    
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

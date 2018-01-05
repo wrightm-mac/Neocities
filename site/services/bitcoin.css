@@ -1,0 +1,66 @@
+/*
+
+
+
+
+
+
+
+
+
+
+*/
+
+.bitcoinTable {
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+}
+
+.bitcoinRow {
+}
+
+.bitcoinCellSymbol {
+  text-align: center;
+  width: 5%;
+}
+
+.bitcoinCellCurrency {
+  text-align: center;
+  padding: 0 6px 0 6px;
+  width: 30%;
+}
+
+.bitcoinCellDate {
+  text-align: left;
+}
+
+.bitcoinCellBuy, .bitcoinCellSell, .bitcoinCellLast {
+  text-align: right;
+  padding: 0 6px 0 6px;
+  width: 25%;
+}
+
+.bitcoinRateUp {
+  color: green;
+}
+
+.bitcoinRateSame {
+  color: blue;
+}
+
+.bitcoinRateDown {
+  color: red;
+}
+
+.bitcoinCellHistoryDate {
+  font-size: 50%;
+  text-align: left;
+  color: darkgray;
+  padding: 0 0 0 0;
+}
+
+.bitcoinCellHistoryPrice {
+  text-align: right;
+  padding: 0 0 0 0;
+}

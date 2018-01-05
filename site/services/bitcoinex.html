@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Bitcoin Exchange Rates</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <link href="bitcoin.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="/script/standard.js"></script>
+  </head>
+  <body>
+  
+    <script>
+
+      let exchangeGrid = {
+        css: "standardTable",
+        header: {
+          css: "standardTableHeader"
+        },
+        row: {
+          css: ["standardTableRowEven", "bitcoinRow"],
+          altcss: ["standardTableRowOdd", "bitcoinRow"],
+          after: function(rowdata) {
+            $(this).data("symbol", rowdata.name);
+            $(this).data("price", rowdata.last);
+          },
+          click: function() {
+            let $this = $(this);
+            
+            let $historyPanel = $this.find("#historyPanel");
+            $historyPanel.toggle();
+            
+            if (! $this.data("expanded")) {
+              let symbol = $this.data("symbol");
+              
+              doAjax("https://api.coindesk.com/v1/bpi/historical/close.json", {currency: symbol}, function(success, data) {
+                if (success) {
+                  let json = JSON.parse(data);
+                  
+                  let prices = [];
+                  for (let date in json.bpi) {
+                     prices.push({date: date, price: json.bpi[date]});
+                  };
+                  
+                  $historyPanel.table(historyGrid, prices.reverse());
+                  
+                  let price = $this.data("price")
+                  let lastHistoricalPrice = prices[0].price;
+                  let color = (price === lastHistoricalPrice)
+                                ? "bitcoinRateSame" : (price < lastHistoricalPrice)
+                                  ? "bitcoinRateDown" : "bitcoinRateUp";
+                  $this.find("#lastPrice").addClass(color);
+                  
+                }
+              });
+              
+              $this.data("expanded", true);
+            }
+          }
+        },
+        columns: [{
+          header: {
+            css: "standardTableHeaderCell",
+            text: "Currency",
+            colspan: 2
+          },
+          css: "bitcoinCellSymbol",
+          datafield: "name",
+        }, {
+          css: "bitcoinCellCurrency",
+          datafield: "currency",
+        }, {
+          header: {
+            css: "standardTableHeaderCell",
+            text: "Last"
+          },
+          css: "bitcoinCellLast",
+          id: "lastPrice",
+          datafield: "last",
+          transform: function(data) { return formatNumber(data.toFixed(2)); },
+          panel: {
+            id: "historyPanel",
+            hidden: true
+          }
+        }, {
+          header: {
+            css: "standardTableHeaderCell",
+            text: "Buy"
+          },
+          css: "bitcoinCellBuy",
+          datafield: "buy",
+          transform: function(data) { return formatNumber(data.toFixed(2)); }
+        }, {
+          header: {
+            css: "standardTableHeaderCell",
+            text: "Sell"
+          },
+          css: "bitcoinCellSell",
+          datafield: "sell",
+          transform: function(data) { return formatNumber(data.toFixed(2)); }
+        }]
+      };
+      
+      let historyGrid = {
+        css: "bitcoinTable",
+        columns: [{
+          css: "bitcoinCellHistoryDate",
+          datafield: "date",
+          transform: function(data, rowdata, rowindex) {
+            return (rowindex % 7) === 0 ? new Date(data).toNeutral() : null;
+          }
+        }, {
+          css: "bitcoinCellHistoryPrice",
+          datafield: "price",
+          transform: function(data) { return formatNumber(data.toFixed(2)); },
+          after: function(rowdata, rowindex, dataset) {
+            let currentPrice = rowdata.price;
+            let previousPrice = (dataset[rowindex + 1] || {price: currentPrice}).price;
+            let color = (currentPrice === previousPrice) ? "bitcoinRateSame" : (currentPrice < previousPrice) ? "bitcoinRateDown" : "bitcoinRateUp";
+            $(this).addClass(color);
+          }
+        }]
+      };
+      
+      
+      function doAjax(url, params, callback, scope) {
+        $.ajax({
+          url: url,
+          data: $.extend({
+          }, params),
+          cache: false
+        }).done(function(data, textStatus, jqXHR) {
+            if (callback) {
+              callback.call(scope || this, true, data);
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("doAjax: fail! [" + errorThrown + "]");
+            
+            if (callback) {
+              callback.call(scope || this, false, errorThrown);
+            }
+        });
+      }
+      
+      function doSearch() {
+        let searchText = $("#searchText").val();
+        
+        doAjax("https://blockchain.info/ticker", {}, function(success, data) {
+          let currencies = getCurrencyArray();
+          let mappedData = [];
+          $.each(data, function(index, row) {
+            mappedData.push($.extend({
+              name: index,
+              currency: currencies[index]
+            }, row));
+          });
+          
+          $("#exchangeResults").table(exchangeGrid, mappedData);
+        });
+      }
+        
+      $(function() {
+          
+        doSearch();
+        
+      });
+    </script>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      
+      <h1>Bitcoin Exchange</h1>
+      
+      <div id="exchangeResults"></div>
+    
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

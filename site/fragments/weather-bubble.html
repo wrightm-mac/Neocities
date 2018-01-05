@@ -1,0 +1,19 @@
+<script src="/script/weather.js"></script>
+<div class="weatherBubble">
+  <img id="weatherBubbleIcon" class="weatherBubbleIcon"/>
+  <div id="weatherBubbleText" class="weatherBubbleText"></div>
+</div>
+<script>
+  $(function() {
+    getOpenWeather("weather", {q: "lincoln,uk"}, function(success, data) {
+      if (success) {
+        var weather = data.weather[0];
+        var iconUrl = weatherImageUrl + weather.icon + ".png";
+        
+        $("#weatherBubbleIcon").attr("src", iconUrl);
+        $("#weatherBubbleIcon").attr("title", $.capitalise(weather.description) + " (" + data.main.temp + "°)");
+        $("#weatherBubbleText").text(weather.main);
+      }
+    });
+  });
+</script>

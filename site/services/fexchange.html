@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Foreign Exchange</title>
+    <link href="/style.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.min.js"></script>
+    <script src="/script/app/underscore-1.8.3.min.js"></script>
+    <script src="/script/application.js"></script>
+    <script src="/script/openfx.js"></script>
+  </head>
+  <body>
+
+    <div fragment="/fragments/title-fragment.html"></div>
+    
+    <div class="contentSingle">
+      <h1>Foreign Exchange Rates</h1>
+      
+      <div class="smallPrint">
+        The free subscription to the <a href="https://openexchangerates.org/" target="_newwindow" class="externalLinkSlateBlue">Open Exchange Rates</a> service does not allow for the selection of a specific currency. Therefore, all exchange rates shown are based on <i>USD</i>.
+      </div>
+      
+      <br/>
+
+      <div>
+        <table id="fxCurrencies" class="currencies">
+          <tr class="standardTableHeader">
+            <th class="standardTableHeader currencyHeaderSymbol">Symbol</th>
+            <th class="standardTableHeader currencyHeaderName">Currency</th>
+            <th class="standardTableHeader currencyHeaderRate">Rate</th>
+          </tr>
+        </table>
+      </div>
+      
+      <div>
+        <table id="fxServiceUsage" class="currencyServiceUsage">
+          <tr class="currencyServiceUsageHeader">
+            <th colspan="2">open exchange rates</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    <div fragment="/fragments/footer-fragment.html"></div>
+    
+  </body>
+</html>

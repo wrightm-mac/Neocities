@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>wrightm - Store</title>
+    <link href="store.css" rel="stylesheet" type="text/css" media="all">
+    <script src="/script/app/jquery-3.2.1.js"></script>
+    <script src="/script/app/angular-1.8.3.js"></script>
+    <script src="store.js"></script>
+  </head>
+  <body>
+    <script>
+      $(function() {
+        getAllCategories(function(success, data) {
+          console.log("getAllCategories [success=" + success + "]");
+          
+          if (success) {
+            let $panel = $("#allCategories");
+            $.each(data.categories, function(index, category) {
+              let $category = $("<div></div>");
+              $category.addClass("categoryLarge");
+              
+              let $content = $("<div></div>");
+              $content.addClass("categoryContent");
+              $category.append($content);
+              
+              let $span = $("<div></div>");
+              $span.addClass("categoryTitle");
+              $span.html(category.name);
+              $content.append($span);
+              
+              $panel.append($category);
+            });
+          }
+        });
+      });
+    </script>
+    
+    <div id="allCategories" class="categoriesLarge">
+    </div>
+  </body>
+</html>
